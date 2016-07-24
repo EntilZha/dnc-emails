@@ -41,24 +41,24 @@ def parse_email_body(email_message):
 def parse_email(path):
     with open(path) as f:
         email_message = email.message_from_file(f)
-    body = parse_email_body(email_message)
+    raw_body = parse_email_body(email_message)
 
-    try:
-        if isinstance(body, bytes):
-            return {
-                'from': email_message['from'],
-                'to': email_message['to'],
-                'body': body.decode('utf-8')
-            }
-        else:
-            return {
-                'from': email_message['from'],
-                'to': email_message['to'],
-                'body': body
-            }
-    except:
-        print("Could not parse: {0}".format(path))
-        raise
+    if isinstance(raw_body, bytes):
+        try:
+            body = raw_body.decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                body = raw_body.decode('windows-1252')
+            except UnicodeDecodeError:
+                print("Could not parse: {0}".format(path))
+                raise
+    else:
+        body = raw_body
+    return {
+        'from': email_message['from'],
+        'to': email_message['to'],
+        'body': body
+    }
 
 
 def parse_all_emails(start=START_ID, stop=STOP_ID):
