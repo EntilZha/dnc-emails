@@ -3,6 +3,10 @@ from functional import pseq
 import requests
 
 
+START_ID = 1
+STOP_ID = 22456
+
+
 def save_email(email_id, url):
     r = requests.get(url)
     if r.status_code != 200:
@@ -13,7 +17,7 @@ def save_email(email_id, url):
     return True
 
 
-def save_all_emails(start=1, stop=22456):
+def save_all_emails(start=START_ID, stop=STOP_ID):
     base_url = 'https://wikileaks.org/dnc-emails/get/{id}'
     urls = [(i, base_url.format(id=i)) for i in range(start, stop + 1)]
     pseq(urls).map(
@@ -49,3 +53,10 @@ def parse_email(path):
             'to': email_message['to'],
             'body': body
         }
+
+
+def parse_all_emails(start=START_ID, stop=STOP_ID):
+    base_path = 'data/{id}.txt'
+    pseq.range(start, stop + 1)\
+        .map(lambda i: parse_email(base_path.format(id=i)))\
+        .to_jsonl('emails.jsonl')
