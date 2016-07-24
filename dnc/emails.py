@@ -41,18 +41,22 @@ def parse_email(path):
     else:
         body = email_message.get_payload(decode=True)
 
-    if isinstance(body, bytes):
-        return {
-            'from': email_message['from'],
-            'to': email_message['to'],
-            'body': body.decode('utf-8')
-        }
-    else:
-        return {
-            'from': email_message['from'],
-            'to': email_message['to'],
-            'body': body
-        }
+    try:
+        if isinstance(body, bytes):
+            return {
+                'from': email_message['from'],
+                'to': email_message['to'],
+                'body': body.decode('utf-8')
+            }
+        else:
+            return {
+                'from': email_message['from'],
+                'to': email_message['to'],
+                'body': body
+            }
+    except:
+        print("Could not parse: {0}".format(path))
+        raise
 
 
 def parse_all_emails(start=START_ID, stop=STOP_ID):
