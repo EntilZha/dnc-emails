@@ -12,7 +12,7 @@ def save_email(email_id, url):
     if r.status_code != 200:
         print('Error occurred at id={id}'.format(id=email_id))
         return False
-    with open('data/{id}.txt'.format(id=email_id), 'w') as f:
+    with open('data/raw/{id}.txt'.format(id=email_id), 'w') as f:
         f.write(r.text)
     return True
 
@@ -38,7 +38,7 @@ def parse_email_body(email_message):
     return ""
 
 
-def parse_email(path):
+def parse_email(email_id, path):
     with open(path) as f:
         email_message = email.message_from_file(f)
     raw_body = parse_email_body(email_message)
@@ -57,12 +57,13 @@ def parse_email(path):
     return {
         'from': email_message['from'],
         'to': email_message['to'],
-        'body': body
+        'body': body,
+        'email_id': email_id
     }
 
 
 def parse_all_emails(start=START_ID, stop=STOP_ID):
-    base_path = 'data/{id}.txt'
+    base_path = 'data/raw/{id}.txt'
     pseq.range(start, stop + 1)\
-        .map(lambda i: parse_email(base_path.format(id=i)))\
+        .map(lambda i: parse_email(i, base_path.format(id=i)))\
         .to_jsonl('data/emails.jsonl')
