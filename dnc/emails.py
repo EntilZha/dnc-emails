@@ -15,6 +15,6 @@ def save_email(email_id, url):
 def save_all_emails(start=1, stop=22456):
     base_url = 'https://wikileaks.org/dnc-emails/get/{id}'
     urls = [(i, base_url.format(id=i)) for i in range(start, stop + 1)]
-    pseq.range(urls).map(
+    pseq(urls).map(
         lambda kv: (kv[0], kv[1], save_email(kv[0], kv[1]))
     ).to_json('data/results.json')
