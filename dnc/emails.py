@@ -25,21 +25,23 @@ def save_all_emails(start=START_ID, stop=STOP_ID):
     ).to_json('data/results.json')
 
 
-def parse_email(path):
-    with open(path) as f:
-        email_message = email.message_from_file(f)
-    body = ""
-
+def parse_email_body(email_message):
     if email_message.is_multipart():
         for part in email_message.walk():
             content_type = part.get_content_type()
             content_disposition = str(part.get('Content-Disposition'))
 
             if content_type == 'text/plain' and 'attachment' not in content_disposition:
-                body = part.get_payload(decode=True)
-                break
+                return part.get_payload(decode=True)
     else:
-        body = email_message.get_payload(decode=True)
+        return email_message.get_payload(decode=True)
+    return ""
+
+
+def parse_email(path):
+    with open(path) as f:
+        email_message = email.message_from_file(f)
+    body = parse_email_body(email_message)
 
     try:
         if isinstance(body, bytes):
