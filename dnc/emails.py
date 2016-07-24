@@ -65,4 +65,4 @@ def parse_all_emails(start=START_ID, stop=STOP_ID):
     base_path = 'data/{id}.txt'
     pseq.range(start, stop + 1)\
         .map(lambda i: parse_email(base_path.format(id=i)))\
-        .to_jsonl('emails.jsonl')
+        .to_jsonl('data/emails.jsonl')
