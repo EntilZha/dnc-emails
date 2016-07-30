@@ -57,6 +57,7 @@ def parse_email(email_id, path):
     return {
         'from': email_message['from'],
         'to': email_message['to'],
+        'subject': email_message['subject'],
         'body': body,
         'email_id': email_id
     }
